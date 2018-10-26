@@ -1,0 +1,3 @@
+[submodule "YouTube-Virality-Predictor"]
+	path = YouTube-Virality-Predictor
+	url = https://github.com/allenwang28/YouTube-Virality-Predictor.git

@@ -1,0 +1,112 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+% Template for a LaTex article in English.
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\documentclass[12pt]{article}
+\usepackage{fullpage,enumitem,amsmath,amsthm,amsfonts,amssymb,graphicx,float,listings}
+
+% AMS packages:
+% \usepackage{amsmath, amsthm, amsfonts}
+
+% Theorems
+%-----------------------------------------------------------------
+\newtheorem{thm}{Theorem}[section]
+\newtheorem{cor}[thm]{Corollary}
+\newtheorem{lem}[thm]{Lemma}
+\newtheorem{prop}[thm]{Proposition}
+\theoremstyle{definition}
+\newtheorem{defn}[thm]{Definition}
+\theoremstyle{remark}
+\newtheorem{rem}[thm]{Remark}
+
+% Shortcuts.
+% One can define new commands to shorten frequently used
+% constructions. As an example, this defines the R and Z used
+% for the real and integer numbers.
+%-----------------------------------------------------------------
+\def\RR{\mathbb{R}}
+\def\ZZ{\mathbb{Z}}
+
+% Similarly, one can define commands that take arguments. In this
+% example we define a command for the absolute value.
+% -----------------------------------------------------------------
+\newcommand{\abs}[1]{\left\vert#1\right\vert}
+
+% Operators
+% New operators must defined as such to have them typeset
+% correctly. As an example we define the Jacobian:
+% -----------------------------------------------------------------
+\DeclareMathOperator{\Jac}{Jac}
+
+%-----------------------------------------------------------------
+\title{CS 221 Project Proposal}
+\author{Jon Braatz \& Lance Lamore}
+
+\begin{document}
+\maketitle
+
+\abstract{We propose to create a model for predicting YouTube views for a video
+  posted to an uploader's channel based on a canditate video title, thumbnail image, and statistics from
+  previously uploaded videos to the uploader's channel. Previous work in this
+  area has found that channel statistics are better predictors of a video's
+  views than metadata about the video itself, so for a baseline prediction we
+  will use the average of the views of up to five of that channel's most
+  recently uploaded videos, and for an oracle we will use the candidate title as
+a search term and return the view count of the search result whose channel view count
+most closely matches the uploader's.}
+
+\section{Overview}
+
+The premise of this project revolves around the idea of predicting the view
+count of YouTube videos given features like the title, thumbnail, description,
+and similar information from previous videos uploaded on the same channel. We
+had the initial idea of predicting views based just on a given title and
+thumbnail and then using this predictor to generate video titles that are
+optimized for maximizing views given a list of keywords that the title should
+contain. However, previous work in this area found that the metadata of
+individual videos were far less predictive of views than channel information
+like subscriber count, channel view count, and channel video count. Therefore,
+the input to our system will be a YouTube channel id, a title, and maybe a
+thumbnail if time allows, and the output will be a prediction of the number of
+views a video with that title and thumbnail would get if it were posted to that
+channel. If time allows, we could use this view count predictor as a subsystem
+of a title generator that given a channel id, thumbnail, and set of keywords,
+will will generate a video title corresponding to those keywords that is
+optimized for getting the most views for that channel.
+
+
+\section{Previous Work}
+\begin{enumerate}
+  \item https://towardsdatascience.com/youtube-views-predictor-9ec573090acb
+  \item https://github.com/allenwang28/YouTube-Virality-Predictor 
+\end{enumerate}
+
+\section{Datasets}
+\begin{enumerate}
+\item YouTube 8M dataset: https://research.google.com/youtube8m/
+  \item Dataset from the existing virality predictor github page: https://github.com/allenwang28/YouTube-Virality-Predictor/tree/master/data 
+\item https://channelcrawler.com 
+\item YouTube Data API: https://developers.google.com/youtube/v3/ 
+\end{enumerate}
+\section{Approach}
+
+\begin{enumerate}
+\item Neural nets
+  \item Using other pre-trained neural nets as feature extractors for images and titles
+  \item Gradient boosting to comine multiple predictors into one
+  \item Recurrent networks/LSTMs on titles
+  \item Implement our own CNNs for feature extraction on thumbnails
+\end{enumerate}
+
+
+% Bibliography
+%-----------------------------------------------------------------
+\begin{thebibliography}{99}
+
+\bibitem{Cd94} Author, \emph{Title}, Journal/Editor, (year)
+
+\end{thebibliography}
+
+\end{document}
