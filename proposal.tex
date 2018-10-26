@@ -48,11 +48,11 @@
 \maketitle
 
 \abstract{We propose to create a model for predicting YouTube views for a video
-  posted to an uploader's channel based on a canditate video title, thumbnail image, and statistics from
-  previously uploaded videos to the uploader's channel. Previous work in this
+  posted to an uploader's channel based on a canditate video title and statistics from
+  previously uploaded videos to the uploader's channel. Time permitting, we will additionally incorporate thumbnails as a feature. Previous work in this
   area has found that channel statistics are better predictors of a video's
   views than metadata about the video itself, so for a baseline prediction we
-  will use the average of the views of up to five of that channel's most
+  will use the average of the views of up to three of that channel's most
   recently uploaded videos, and for an oracle we will use the candidate title as
 a search term and return the view count of the search result whose channel view count
 most closely matches the uploader's.}
@@ -78,34 +78,43 @@ optimized for getting the most views for that channel.
 
 
 \section{Previous Work}
-\begin{enumerate}
-  \item https://towardsdatascience.com/youtube-views-predictor-9ec573090acb
-  \item https://github.com/allenwang28/YouTube-Virality-Predictor 
-\end{enumerate}
+Another team of 4 people attempted a similar project[1]. They originally sought to
+predict view counts based on an input image and title for a specific genre of
+workout videos. It was based on an incorrect assumption that there would be enough 
+similarities across the way top Youtuber's used thumbnails and wrote titles. This 
+was not enough so they created another more complicated feature extractor and saw 
+that 5 variables with the most influence over views on a video were subscriber 
+count, channel video count, channel view count, previous video view count, and 
+weeks published. Because none of these features seem specific to workout videos, we
+hoped to expand this across all genres. 
 
 \section{Datasets}
-\begin{enumerate}
-\item YouTube 8M dataset: https://research.google.com/youtube8m/
-  \item Dataset from the existing virality predictor github page: https://github.com/allenwang28/YouTube-Virality-Predictor/tree/master/data 
-\item https://channelcrawler.com 
-\item YouTube Data API: https://developers.google.com/youtube/v3/ 
-\end{enumerate}
-\section{Approach}
+There are 2 data sets that we found with clean data to use[2][3]. Furthermore, we can use the Youtube data API [4]and another search called channel crawlers[5] which will list out channels based on a theme.  
 
-\begin{enumerate}
-\item Neural nets
-  \item Using other pre-trained neural nets as feature extractors for images and titles
-  \item Gradient boosting to comine multiple predictors into one
-  \item Recurrent networks/LSTMs on titles
-  \item Implement our own CNNs for feature extraction on thumbnails
-\end{enumerate}
+
+\section{Approach}
+We want to focus on extracting more 
+features and use gradient boosting to combine multiple weak predictions into a more
+powerful prediction using a neural net. We want to compile more comprehensive channel statistics since
+those seemed to have the greatest influence. Time permitting we could incorporate pre-trained models to gather scores on the thumbnails like NSFW rating, and build another model to track the clickbait score of the title.  
+
+\section{Baseline and Oracle}
+The baseline for this project involves returning the average views of the most recent video on the channel. The Oracle involves searching across YouTube for a channel with similar size and returning the views of the of a similar themed video from a similar sized channel. The Oracle was difficult to design because the project involves predictions and because of this should not be treated as the ceiling for predictions. 
 
 
 % Bibliography
 %-----------------------------------------------------------------
 \begin{thebibliography}{99}
 
-\bibitem{Cd94} Author, \emph{Title}, Journal/Editor, (year)
+\bibitem{Cd94} Aravind Srinivasan, \emph{YouTuve Views Predictor}, 
+
+    \qquad https://towardsdatascience.com/youtube-views-predictor-9ec573090acb
+\bibitem{Cd94}
+YouTube 8M dataset: https://research.google.com/youtube8m/
+\bibitem{Cd94}Dataset from the existing virality predictor github page: https://github.com/allenwang28/YouTube-Virality-Predictor/tree/master/data
+\bibitem{Cd94}YouTube Data API: https://developers.google.com/youtube/v3/
+\bibitem{Cd94}https://channelcrawler.com 
+
 
 \end{thebibliography}
 
