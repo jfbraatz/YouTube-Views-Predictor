@@ -21,14 +21,14 @@ from secrets import DEVELOPER_KEY
 YOUTUBE_API_SERVICE_NAME = 'youtube'
 YOUTUBE_API_VERSION = 'v3'
 
-def baseline(options):
+def baseline(channel_id):
   youtube = build(YOUTUBE_API_SERVICE_NAME, YOUTUBE_API_VERSION,
     developerKey=DEVELOPER_KEY)
 
   number_to_avg_over = 5
 
   search_response = youtube.search().list(
-      channelId=options.channel_id,
+      channelId=channel_id,
       type='video',
       order='date',
       part='id',
@@ -48,7 +48,8 @@ def baseline(options):
                              for result in most_recent_videos['items']]
   prediction = sum(most_recent_view_counts) / len(most_recent_view_counts)
 
-  print "Prediction: %d" % avg_view_count
+  # print "Prediction: %d" % prediction
+  return prediction
 
 if __name__ == '__main__':
   parser = argparse.ArgumentParser()
@@ -57,6 +58,6 @@ if __name__ == '__main__':
   args = parser.parse_args()
 
   try:
-    baseline(args)
+    baseline(args.channel_id)
   except HttpError, e:
     print 'An HTTP error %d occurred:\n%s' % (e.resp.status, e.content)

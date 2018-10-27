@@ -20,12 +20,12 @@ from secrets import DEVELOPER_KEY
 YOUTUBE_API_SERVICE_NAME = 'youtube'
 YOUTUBE_API_VERSION = 'v3'
 
-def oracle(options):
+def oracle(query_title, channel_id):
   youtube = build(YOUTUBE_API_SERVICE_NAME, YOUTUBE_API_VERSION,
     developerKey=DEVELOPER_KEY)
 
   search_response = youtube.search().list(
-    q=options.title,
+    q=query_title,
     type='video',
     part='id,snippet',
       fields='items(snippet/title,snippet/channelId,id/videoId)',
@@ -33,7 +33,7 @@ def oracle(options):
   ).execute()
 
   real_channel_view_count = int(youtube.channels().list(
-      id=options.channel_id,
+      id=channel_id,
       part='statistics',
       fields='items/statistics/viewCount',
   ).execute()['items'][0]['statistics']['viewCount'])
@@ -56,21 +56,22 @@ def oracle(options):
 
       title = search_results[i]['snippet']['title']
       videoId = search_results[i]['id']['videoId']
-      if ids[i] == options.channel_id and title == options.title:
+      if ids[i] == channel_id and title == query_title:
         continue # for testing against existing videos
       channelViewCount = channel_view_counts[ids[i]]
       if abs(channelViewCount - real_channel_view_count)  < min_difference:
           min_difference = abs(channelViewCount - real_channel_view_count)
           min_index = i
-      print '%s (Id %s, ChannelViews %s)' % (
-          title, videoId, channelViewCount)
+      # print '%s (Id %s, ChannelViews %s)' % (
+      #     title, videoId, channelViewCount)
   prediction = int(youtube.videos().list(
       id=search_results[min_index]['id']['videoId'],
       part='statistics',
       fields='items(statistics/viewCount)',
   ).execute()['items'][0]['statistics']['viewCount'])
-  print "Prediction: %d (from %s)" % (
-    prediction, search_results[min_index]['snippet']['title'])
+  # print "Prediction: %d (from %s)" % (
+  #   prediction, search_results[min_index]['snippet']['title'])
+  return prediction
 
 
 
@@ -81,6 +82,6 @@ if __name__ == '__main__':
   args = parser.parse_args()
 
   try:
-    oracle(args)
+    oracle(args.title, args.channel_id)
   except HttpError, e:
     print 'An HTTP error %d occurred:\n%s' % (e.resp.status, e.content)
