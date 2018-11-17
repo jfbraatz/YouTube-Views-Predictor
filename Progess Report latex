@@ -1,0 +1,97 @@
+
+\documentclass[12pt]{article}
+\usepackage{fullpage,enumitem,amsmath,amsthm,amsfonts,amssymb,graphicx,float,listings}
+
+\newtheorem{thm}{Theorem}[section]
+\newtheorem{cor}[thm]{Corollary}
+\newtheorem{lem}[thm]{Lemma}
+\newtheorem{prop}[thm]{Proposition}
+\theoremstyle{definition}
+\newtheorem{defn}[thm]{Definition}
+\theoremstyle{remark}
+\newtheorem{rem}[thm]{Remark}
+
+% Shortcuts.
+% One can define new commands to shorten frequently used
+% constructions. As an example, this defines the R and Z used
+% for the real and integer numbers.
+%-----------------------------------------------------------------
+\def\RR{\mathbb{R}}
+\def\ZZ{\mathbb{Z}}
+
+% Similarly, one can define commands that take arguments. In this
+% example we define a command for the absolute value.
+% -----------------------------------------------------------------
+\newcommand{\abs}[1]{\left\vert#1\right\vert}
+
+% Operators
+% New operators must defined as such to have them typeset
+% correctly. As an example we define the Jacobian:
+% -----------------------------------------------------------------
+\DeclareMathOperator{\Jac}{Jac}
+
+%-----------------------------------------------------------------
+\title{CS 221 Project Progress}
+\author{Jon Braatz \& Lance Lamore}
+
+
+\date{November 2018}
+
+\begin{document}
+
+\maketitle
+
+\abstract{ We propose to create a model for predicting YouTube views for a video
+  posted to an uploader's channel based on a candidate video title and statistics from
+  previously uploaded videos to the uploader's channel. To start with, we are working with
+  a dataset of composed of 6623 random channels from youtube. From this list of channel, we created a simple feature vector for a video based on the channel statistics and began running a simple linear regression on the features in relation to the views of the video.}
+  
+\section{Creating Features}
+We are starting off by using the dataset from Aravind Srinivasan [1], which aimed specifically 
+at predicting the views of workout videos. We wanted to start with this dataset because it is 
+well formatted and contained 92,000 videos from different workout channels, however, we needed to switch to a different method to extract the features we wanted. This dataset contained an incomplete list of videos that each channel has uploaded and ultimately made it so that we needed to create our own list of features by searching the youtube site directly. 
+
+To overcome this challenge, we moved onto a different dataset composed in the same repo. This 
+dataset had a random assortment of channel Ids on Youtube with some coarse statistics. This dataset 
+did not directly contain the data we wanted. It only had the numbers for the channel's subscriber 
+count, video uploads, and channel views. Because of this, we needed to search using the youTube 
+search API[2] to gather the stats that we would like. Using Youtube's API, we chose to gather
+25 videos from each channel. 
+
+For each video, we created a csv file that contained the video ID, 
+Channel ID, View count, like count, dislike count, comment count, favorite count, title, and 
+description. From here, we intended to implement a linear regression on just the values that already have numerical scores. We have 81,000 videos with all of these stats. At the present moment, we have discarded videos with titles and descriptions that involved unicode only characters.
+
+We extracted the features from our csv using the pandas library, stored as a dataframe. The feature for an individual video would involve finding that video's channel ID. Then, we would make the same call to the API and extract the video statistics from prior uploads to the channel. To reduce the amount of features, we kept the size of the vector limited to the previous 10 uploads on the channel. Because of this, we also limited ourselves to only training on channels with 10 or more uploads as well. Each of the 5 numerical stats for each video is what composed the feature vector for a total of 50 features. Thus, the first feature vector is: 
+
+
+$\phi$(video) = [View count of first video, like count of first video , dislike count of first video, favorite count for first vidoe, comment count of the first video, . . . ,View count of 10th video, like count of 10th video, ...]. 
+
+\section{Design of the model}
+
+
+
+
+From here, we created an (x,y) pair that we can use to train a linear regression model, where $x$ is $\phi$(video) and $y$ is the views for that video. Each video came from a different channel to increase the diverstiy of out training set. We used skikit-learn and ran Gradient boosting regressor on all videos that came from prolific channels. Prolific channels were considered channels with greater than 10 uploads.  We hoped that this simple linear regressor will be able to give valuable insight into the future success of a video. 
+
+\section{Preliminary results}
+
+to be wrttien after we can get a working regressor model. Compared the results to the oracle and baseline.  Quick analysis of why the results are what the are, why they are better or worse than expected.
+
+
+\section{Future Work}
+
+Moving forward, we would like to introduce more features. Specifically from the previous research conducted, we would like to include the coarser channel statistics as those had a large impact on the views a video would receive. 
+
+\begin{thebibliography}{99}
+
+\bibitem{Cd94} Aravind Srinivasan, \emph{YouTuve Views Predictor}, 
+
+    \qquad https://towardsdatascience.com/youtube-views-predictor-9ec573090acb
+\bibitem{Cd94}YouTube Data API: https://developers.google.com/youtube/v3/
+
+
+
+\end{thebibliography}
+
+\end{document}
