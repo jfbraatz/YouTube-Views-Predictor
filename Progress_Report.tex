@@ -1,0 +1,160 @@
+
+\documentclass[12pt]{article}
+\usepackage{fullpage,enumitem,amsmath,amsthm,amsfonts,amssymb,graphicx,float,listings}
+
+\newtheorem{thm}{Theorem}[section]
+\newtheorem{cor}[thm]{Corollary}
+\newtheorem{lem}[thm]{Lemma}
+\newtheorem{prop}[thm]{Proposition}
+\theoremstyle{definition}
+\newtheorem{defn}[thm]{Definition}
+\theoremstyle{remark}
+\newtheorem{rem}[thm]{Remark}
+
+% Shortcuts.
+% One can define new commands to shorten frequently used
+% constructions. As an example, this defines the R and Z used
+% for the real and integer numbers.
+%-----------------------------------------------------------------
+\def\RR{\mathbb{R}}
+\def\ZZ{\mathbb{Z}}
+
+% Similarly, one can define commands that take arguments. In this
+% example we define a command for the absolute value.
+% -----------------------------------------------------------------
+\newcommand{\abs}[1]{\left\vert#1\right\vert}
+
+% Operators
+% New operators must defined as such to have them typeset
+% correctly. As an example we define the Jacobian:
+% -----------------------------------------------------------------
+\DeclareMathOperator{\Jac}{Jac}
+
+%-----------------------------------------------------------------
+\title{CS 221 Project Progress}
+\author{Jon Braatz \& Lance Lamore}
+
+
+\date{November 2018}
+
+\begin{document}
+
+\maketitle
+
+\abstract{ We propose to create a model for predicting YouTube views for a video
+  posted to an uploader's channel based on a candidate video title and statistics from
+  previously uploaded videos to the uploader's channel. To start with, we are working with
+  a dataset of composed of 6623 random channels from youtube. From this list of channel, we created a simple feature vector for a video based on the channel statistics and began running a simple linear regression on the features in relation to the views of the video.}
+  
+\section{Creating Features}
+\subsection{Jon's Edits}
+We found a random sample of YouTube channel identifiers, and then used the
+YouTube API to pull both coarse channel statistics like total videos uploaded,
+total subscribers, and total channel view count, in addition to statistics
+related to a subset of videos posted to that channel. The end goal of the
+project is to predict the views of a candidate video based on title and other
+channel statistics, so in order to choose a subset of videos with the most
+that predict the views of a new candidate video most effectively, we should
+choose a subset of videos from the channel that consists of the ``closest''
+videos to the candidate according to some similarity metric. Two similarity
+metrics that we thought we would most effective are based on the publish time of the candidate video
+and its textual information like title and description. 
+
+The efficacy of our method is determined largely by which subset of
+video statistics we choose to use. We will want to be using the statistics of
+the most similar videos on the channel to generate a prediction for the views in
+a candidate video, so our measure of ``video similarity'' will determine our
+model.
+
+\section{Design of the model}
+
+Our project is a regression task that, when given a candidate YouTube
+video title and channel to upload it to, predicts the number of views a video
+uploaded to the channel with that title would likely get. The statistics that
+will be used to predict the view count will be the video statistics available
+through the YouTube API of a subset of videos previously uploaded to the
+provided channel. In particular, these statistics are:
+\begin{enumerate}
+  \item \texttt{ViewCount}
+  \item \texttt{CommentCount}
+  \item \texttt{LikeCount}
+  \item \texttt{DislikeCount}
+  \item \texttt{FavoriteCount}
+  \end{enumerate}
+The subset of videos to choose these statistics from will be the k-nearest
+neighbors of the candidate video according to some similarity metric.
+We chose two similarity metrics, one based on the video timestamps by considering
+the statistics of the 10 most recently uploaded videos, and another based on
+cosine similarity of the uploaded video titles to the candidate title.
+The feature vectors are the same for both
+models, and they are the video statistics of the ``most similar'' videos in the
+channel to the candidate video, the model just differs in which videos those are.
+We use a gradient boosted tree regressor to turn these statistics into a view
+count prediction, and we use the \texttt{xgboost} machine learning library to do
+so.
+
+To train the regressor, we needed a dataset of ``candidate'' videos and
+channels that they'd be uploaded to. To gather this data, we scanned through a
+currently existing dataset with randomly sampled YouTube channel identifiers,
+and using the YouTube search API we could pull statistics for all videos in
+those channels. For our training dataset, we chose the most recently
+uploaded video to each channel to act as a ``candidate'' video for that channel,
+and then pulled the statistics of the 10 most similar videos to that one, both
+in terms of publishing date and similarity of title according to cosine similarity.
+Using the true view count of the most recently uploaded videos along with these
+statistics, we could train our gradient boosted regressor.
+
+\section{Algorithms Used}
+Our problem is fundamentally a regression problem, and since we don't want to
+limit ourselves to linear models, we decided to use gradient boosted regression.
+We'll define a couple of terms first.
+
+\begin{enumerate}
+\item Regression: Regression consists of predicting a target value (in our case,
+  the view count of a candidate video) based on several numerical or categorical
+  predictors. In our case, the predictors are video statistics for the 10 videos
+  in the channel that are most similar to the candidiate video according to some
+  similarity metric.
+\item Decision Tree: A decision tree is a method of regression that is built
+  top-down from a root node and involves partitioning the data into subsets that
+  contain instances with similar values. At each interior node of the tree, we
+  apply a test to one of the predictor variables, and depending on the value of
+  the outcome of the test we either go to the left or right subtree. Predictions
+  of the target variable correspond to leaves in the tree. A decision tree
+  regression algorithm will construct a decision tree based on training data
+  that minimizes the least square error of the predictions and training target
+  values, subject to a regularization term.
+\item Gradient Tree Boosting: Gradient tree boosting is based on the idea of
+  creating a potentially weak regression tree on the data, creating a regression
+  tree for the residuals of the first model, and then sequantially applying this
+  idea to create a strong regressor out of weak regressors.
+\end{enumerate}
+We use gradient boosted regressors from two libraries for our project, one from
+\texttt{sklearn} and the other from \texttt{xgboost}. The first library offers
+an easy way to visualize the feature importances that are learned by the
+regressor, and the second offers better performance when predicting new values.
+Also, since our target variable, view count, ranges over many orders of
+magnitude, it is better to predict the logarithm of the view count rather than
+the view count itself.
+
+\section{Preliminary results}
+
+to be wrttien after we can get a working regressor model. Compared the results to the oracle and baseline.  Quick analysis of why the results are what the are, why they are better or worse than expected.
+
+
+\section{Future Work}
+
+Moving forward, we would like to introduce more features. Specifically from the previous research conducted, we would like to include the coarser channel statistics as those had a large impact on the views a video would receive. 
+
+\begin{thebibliography}{99}
+
+\bibitem{Cd94} Aravind Srinivasan, \emph{YouTuve Views Predictor}, 
+
+    \qquad https://towardsdatascience.com/youtube-views-predictor-9ec573090acb
+y\bibitem{Cd94}YouTube Data API: https://developers.google.com/youtube/v3/
+
+
+
+\end{thebibliography}
+
+\end{document}
