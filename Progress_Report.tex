@@ -46,27 +46,7 @@
   previously uploaded videos to the uploader's channel. To start with, we are working with
   a dataset of composed of 6623 random channels from youtube. From this list of channel, we created a simple feature vector for a video based on the channel statistics and began running a simple linear regression on the features in relation to the views of the video.}
   
-\section{Creating Features}
-\subsection{Jon's Edits}
-We found a random sample of YouTube channel identifiers, and then used the
-YouTube API to pull both coarse channel statistics like total videos uploaded,
-total subscribers, and total channel view count, in addition to statistics
-related to a subset of videos posted to that channel. The end goal of the
-project is to predict the views of a candidate video based on title and other
-channel statistics, so in order to choose a subset of videos with the most
-that predict the views of a new candidate video most effectively, we should
-choose a subset of videos from the channel that consists of the ``closest''
-videos to the candidate according to some similarity metric. Two similarity
-metrics that we thought we would most effective are based on the publish time of the candidate video
-and its textual information like title and description. 
-
-The efficacy of our method is determined largely by which subset of
-video statistics we choose to use. We will want to be using the statistics of
-the most similar videos on the channel to generate a prediction for the views in
-a candidate video, so our measure of ``video similarity'' will determine our
-model.
-
-\section{Design of the model}
+\section{Goal and Design of the Model}
 
 Our project is a regression task that, when given a candidate YouTube
 video title and channel to upload it to, predicts the number of views a video
@@ -129,22 +109,56 @@ We'll define a couple of terms first.
   tree for the residuals of the first model, and then sequentially applying this
   idea to create a strong regressor out of weak regressors.
 \end{enumerate}
+
 We use gradient boosted regressors from two libraries for our project, one from
 \texttt{sklearn} and the other from \texttt{xgboost}. The first library offers
 an easy way to visualize the feature importances that are learned by the
 regressor, and the second offers better performance when predicting new values.
 Also, since our target variable, view count, ranges over many orders of
 magnitude, it is better to predict the logarithm of the view count rather than
-the view count itself.
+the view count itself. For this reason, by taking logarithms of the true view
+counts in the training data, our loss function was effectively the mean squared
+error of the logs.
 
 \section{Preliminary results}
 
-to be wrttien after we can get a working regressor model. Compared the results to the oracle and baseline.  Quick analysis of why the results are what the are, why they are better or worse than expected.
+We were able to beat the baseline performance when using both a video similarity
+metric based on timestamp and based on cosine similarity of the title. Plotting
+the feature importances of the regression showed that the important features
+match up with what one would intuitively expect. The best predictor of view
+counts are the view counts of the most similar videos (either most recent or
+closest in subject matter), and their predictive power drops off as the
+similarity to the candidate video goes down. Other statistics besides view
+counts were not found to be predictive.
 
+On our dataset, the baseline's mean squared error between the log of the
+predicted view count and the log of the true view counts in the training set was
+found to be 2.2, and the oracle's was found to be .32. Our regressions based on
+the statistics of most recent videos and videos with the highest cosine
+similarity to the candidate title were 1.92 and 2.07 respectively, which beats
+the baseline but leaves much room for improvement. The $R^2$ values for both
+regressions were similar, at approximately .617 and .624 respectively.
+
+\begin{figure}[H]
+\includegraphics[width=.4\textwidth]{time_importances.png}
+\includegraphics[width=.4\textwidth]{time_graph.png}
+\caption{``The feature importances and a plot of the log-transformed viewCount
+  predictions against the true viewCounts when using statistics for the 10 most
+  recent videos.''}
+\includegraphics[width=.4\textwidth]{nlp_importances.png}
+\includegraphics[width=.4\textwidth]{nlp_graph.png}
+\caption{``The feature importances and a plot of the log-transformed viewCount
+  predictions against the true viewCounts when using statistics for the 10 most
+  similar videos according to the title's cosine similarity with the candidate title.''}
+\end{figure}
 
 \section{Future Work}
 
-Moving forward, we would like to introduce more features. Specifically from the previous research conducted, we would like to include the coarser channel statistics as those had a large impact on the views a video would receive. 
+Moving forward, we will eliminate features that were found not to be predictive
+and add more sophisticated NLP models. We can add extra features to the channel
+feature vectors that come from NLP models, or we can use more sophisticated NLP
+models to choose the subset of video statistics to include in the feature vector.
+It's also possible that using a larger dataset would make the regression perform better.
 
 \begin{thebibliography}{99}
 
