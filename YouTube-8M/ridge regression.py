@@ -82,7 +82,6 @@ X = np.random.randn(n_samples, n_features)
 clf = Ridge(alpha=1.0)
 clf.fit(X_train, y_train)
 
-print (clf.get_params())
 
 ridge_pred = clf.predict(X_test)
 
