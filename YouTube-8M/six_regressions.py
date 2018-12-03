@@ -155,11 +155,13 @@ y = df['trueViewCount']
 
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.33)
 
-svm_regressor(X_train, y_train, X_test, y_test)
-Ridge_regressor(X_train, y_train, X_test, y_test)
-XGB_regressor(X_train, y_train, X_test, y_test)
-Random_forest(X_train, y_train, X_test, y_test)
 linear_regressor(X_train, y_train, X_test, y_test)
+Ridge_regressor(X_train, y_train, X_test, y_test)
+svm_regressor(X_train, y_train, X_test, y_test)
+
+Adaboost_regression(X_train, y_train, X_test, y_test)
+Random_forest(X_train, y_train, X_test, y_test)
+XGB_regressor(X_train, y_train, X_test, y_test)
 
 correlation = X.corr()
 
