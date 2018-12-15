@@ -4,3 +4,32 @@ Data Exploration.ipynb:
     the ones we call that are defined in the spacy, sklearn, and xgboost libraries.
 
 The python files are for interacting with the YouTube API and putting everything into csvs. 
+
+baseline.py: 
+    This takes in a channel ID and returns a baseline estimate for the number of views the next video in that channel will get.
+    
+captions.py:    
+    interacts with the youttube api to return the captions
+    
+channel_data.py:
+    This returns all the statistics compiled for a channel.
+    
+channel_descriptions.py: 
+    This returns the desciptions for the channel
+    
+channel_videos.py:
+    This returns the statistics for the videos within a channel.
+
+creating_video_stats.py:
+    This pulled the statistics for all the videos from a CSV file containing video IDS.
+    
+extract_from_tensor.py
+    this was used to extract channels IDS from the youtube Dataset
+
+oracle.py
+    This was the code for our oracle, which would essentailly return the views for the most related video by search of a title.
+    
+Six_regressisons:
+    This would read a csv file of video stats and run our six regressions and plot the results along with the errors. 
+    
+    
